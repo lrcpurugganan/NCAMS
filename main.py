@@ -6,10 +6,11 @@ import tkinter.simpledialog as tsd
 import cv2,os
 import csv
 import numpy as np
-from PIL import Image
+from PIL import Image,ImageTk
 import pandas as pd
 import datetime
 import time
+
 
 ############################################# FUNCTIONS ################################################
 
@@ -247,6 +248,7 @@ def getImagesAndLabels(path):
 
 ###########################################################################################
 
+
 def TrackImages():
     check_haarcascadefile()
     assure_path_exists("Attendance/")
@@ -256,7 +258,7 @@ def TrackImages():
     msg = ''
     i = 0
     j = 0
-    recognizer = cv2.face.LBPHFaceRecognizer_create()  # cv2.createLBPHFaceRecognizer()
+    recognizer = cv2.face_LBPHFaceRecognizer.create()
     exists3 = os.path.isfile("TrainingImageLabel\Trainner.yml")
     if exists3:
         recognizer.read("TrainingImageLabel\Trainner.yml")
@@ -264,7 +266,7 @@ def TrackImages():
         mess._show(title='Data Missing', message='Please click on Save Profile to reset data!!')
         return
     harcascadePath = "haarcascade_frontalface_default.xml"
-    faceCascade = cv2.CascadeClassifier(harcascadePath);
+    faceCascade = cv2.CascadeClassifier(harcascadePath)
 
     cam = cv2.VideoCapture(0)
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -276,7 +278,11 @@ def TrackImages():
         mess._show(title='Details Missing', message='Students details are missing, please check!')
         cam.release()
         cv2.destroyAllWindows()
-        window.destroy()
+        window.destroy
+    
+    # Create a dictionary to store the last recorded time for each student
+    last_recorded_time = {}
+    
     while True:
         ret, im = cam.read()
         gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
@@ -284,7 +290,7 @@ def TrackImages():
         for (x, y, w, h) in faces:
             cv2.rectangle(im, (x, y), (x + w, y + h), (225, 0, 0), 2)
             serial, conf = recognizer.predict(gray[y:y + h, x:x + w])
-            if (conf < 50):
+            if conf < 50:
                 ts = time.time()
                 date = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y')
                 timeStamp = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S')
@@ -294,38 +300,37 @@ def TrackImages():
                 ID = ID[1:-1]
                 bb = str(aa)
                 bb = bb[2:-2]
+                
+                # Check if the student's ID is in the last_recorded_time dictionary
+                if ID in last_recorded_time:
+                    last_time = last_recorded_time[ID]
+                    time_difference = (ts - last_time) / 60  # Calculate time difference in minutes
+                    if time_difference < 5:  # Allow recording only once per minute
+                        # Display the name based on the recent detection
+                        cv2.putText(im, str(bb), (x, y + h), font, 1, (255, 255, 255), 2)
+                        continue
+                
                 attendance = [str(ID), '', bb, '', str(date), '', str(timeStamp)]
-
+                with open("Attendance\Attendance_" + date + ".csv", 'a+') as csvFile1:
+                    writer = csv.writer(csvFile1)
+                    writer.writerow(attendance)
+                csvFile1.close()
+                
+                # Update the last recorded time for the student
+                last_recorded_time[ID] = ts
+                cv2.putText(im, str(bb), (x, y + h), font, 1, (255, 255, 255), 2)
+                
             else:
                 Id = 'Unknown'
                 bb = str(Id)
             cv2.putText(im, str(bb), (x, y + h), font, 1, (255, 255, 255), 2)
         cv2.imshow('Taking Attendance', im)
-        if (cv2.waitKey(1) == ord('q')):
+        
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-    ts = time.time()
-    date = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y')
-    exists = os.path.isfile("Attendance\Attendance_" + date + ".csv")
-    if exists:
-        with open("Attendance\Attendance_" + date + ".csv", 'a+') as csvFile1:
-            writer = csv.writer(csvFile1)
-            writer.writerow(attendance)
-        csvFile1.close()
-    else:
-        with open("Attendance\Attendance_" + date + ".csv", 'a+') as csvFile1:
-            writer = csv.writer(csvFile1)
-            writer.writerow(col_names)
-            writer.writerow(attendance)
-        csvFile1.close()
-    with open("Attendance\Attendance_" + date + ".csv", 'r') as csvFile1:
-        reader1 = csv.reader(csvFile1)
-        for lines in reader1:
-            i = i + 1
-            if (i > 1):
-                if (i % 2 != 0):
-                    iidd = str(lines[0]) + '   '
-                    tv.insert('', 0, text=iidd, values=(str(lines[2]), str(lines[4]), str(lines[6])))
-    csvFile1.close()
+        if cv2.getWindowProperty('Taking Attendance', cv2.WND_PROP_VISIBLE) < 1:
+            break
+    
     cam.release()
     cv2.destroyAllWindows()
 
@@ -357,7 +362,7 @@ mont={'01':'January',
 window = tk.Tk()
 window.geometry("1280x720")
 window.resizable(True,False)
-window.title("Attendance System")
+window.title("No Contact Attendance Monitoring System with Machine Learning Technology")
 window.configure(background='#2d420a')
 
 frame1 = tk.Frame(window, bg="#c79cff")
@@ -366,8 +371,31 @@ frame1.place(relx=0.11, rely=0.17, relwidth=0.39, relheight=0.80)
 frame2 = tk.Frame(window, bg="#c79cff")
 frame2.place(relx=0.51, rely=0.17, relwidth=0.38, relheight=0.80)
 
-message3 = tk.Label(window, text="Face Recognition Based Attendance Monitoring System" ,fg="white",bg="#2d420a" ,width=55 ,height=1,font=('comic', 29, ' bold '))
+message3 = tk.Label(window, text="N C A M S" ,fg="white",bg="#2d420a" ,width=55 ,height=1,font=('comic', 29, ' bold '))
 message3.place(x=10, y=10)
+
+# Load the logo image using PIL
+logo_img = Image.open("104462a7-7d70-4a24-bb90-46801d7866f6.png")
+
+
+# Define the desired width and height for the resized logo
+logo_width = 100  # Adjust the width as needed
+logo_height = 100  # Adjust the height as needed
+
+# Resize the logo image without specifying antialiasing (it's enabled by default)
+logo_img = logo_img.resize((logo_width, logo_height))
+logo_img_copy = logo_img.copy()
+
+# Create a PhotoImage object from the resized PIL image
+logo_img = ImageTk.PhotoImage(logo_img)
+logo_img_copy = ImageTk.PhotoImage(logo_img_copy)
+
+# Create a label to display the resized logo image
+logo_label = tk.Label(window, image=logo_img, bg="#2d420a")
+logo_label.place(x=300, y=10)  # Adjust the coordinates as needed
+logo_label_copy = tk.Label(window, image=logo_img_copy, bg="#2d420a")
+logo_label_copy.place(x=800 + logo_width, y=10)  # Adjust the coordinates as needed
+
 
 frame3 = tk.Frame(window, bg="#c4c6ce")
 frame3.place(relx=0.52, rely=0.09, relwidth=0.09, relheight=0.07)
@@ -400,7 +428,7 @@ lbl2.place(x=80, y=140)
 txt2 = tk.Entry(frame2,width=32 ,fg="black",font=('comic', 15, ' bold ')  )
 txt2.place(x=30, y=173)
 
-message1 = tk.Label(frame2, text="1)Take Images  >>>  2)Save Profile" ,bg="#c79cff" ,fg="black"  ,width=39 ,height=1, activebackground = "#3ffc00" ,font=('comic', 15, ' bold '))
+message1 = tk.Label(frame2, text="Enter ID and Name Before Creating A Profile" ,bg="#c79cff" ,fg="black"  ,width=39 ,height=1, activebackground = "#3ffc00" ,font=('comic', 15, ' bold '))
 message1.place(x=7, y=230)
 
 message = tk.Label(frame2, text="" ,bg="#c79cff" ,fg="black"  ,width=39,height=1, activebackground = "#3ffc00" ,font=('comic', 16, ' bold '))
@@ -420,7 +448,7 @@ if exists:
     csvFile1.close()
 else:
     res = 0
-message.configure(text='Total Registrations till now  : '+str(res))
+message.configure(text='Total Registered Users  : '+str(res))
 
 ##################### MENUBAR #################################
 
@@ -431,18 +459,67 @@ filemenu.add_command(label='Contact Us', command = contact)
 filemenu.add_command(label='Exit',command = window.destroy)
 menubar.add_cascade(label='Help',font=('comic', 29, ' bold '),menu=filemenu)
 
-################## TREEVIEW ATTENDANCE TABLE ####################
+def populate_attendance_treeview(date):
+    # Clear existing data in the Treeview
+    for row in tv.get_children():
+        tv.delete(row)
 
-tv= ttk.Treeview(frame1,height =13,columns = ('name','date','time'))
-tv.column('#0',width=82)
-tv.column('name',width=130)
-tv.column('date',width=133)
-tv.column('time',width=133)
-tv.grid(row=2,column=0,padx=(0,0),pady=(150,0),columnspan=4)
-tv.heading('#0',text ='ID')
-tv.heading('name',text ='NAME')
-tv.heading('date',text ='DATE')
-tv.heading('time',text ='TIME')
+    # Read attendance data from CSV file or your data source
+    try:
+        with open("Attendance\Attendance_" + date + ".csv", 'r') as csvFile:
+            reader = csv.reader(csvFile)
+            for row in reader:
+                try:
+                    # Modify the index to match your Excel columns
+                    id = row[0]  # Assuming ID is in the first column (Column A)
+                    name = row[2]  # Assuming names are in the third column (Column C)
+                    date = row[4]  # Assuming dates are in the fifth column (Column E)
+                    time = row[6]  # Assuming times are in the seventh column (Column G)
+
+                    # Insert the values into the Treeview
+                    tv.insert('', 'end', values=(id, name, date, time))
+                except IndexError:
+                    # Handle the case where there are not enough columns in the row
+                    pass
+    except FileNotFoundError:
+        # Handle the case where the attendance file doesn't exist
+        message.configure(text="No attendance data available for this date.")
+
+
+
+# Update the Treeview widget
+tv = ttk.Treeview(frame1, height=13, columns=('','name', 'date', 'time'))
+tv.column('', width=1)  # Add a hidden column
+tv.column('#0', width=1)
+tv.column('name', width=130)
+tv.column('date', width=133)
+tv.column('time', width=133)
+tv.grid(row=2, column=0, padx=(0, 0), pady=(150, 0), columnspan=4)
+tv.heading('#0', text='')
+tv.heading('', text='ID')
+tv.heading('name', text='NAME')
+tv.heading('date', text='DATE')
+tv.heading('time', text='TIME')
+
+# Call the populate_attendance_treeview function with the appropriate date
+# You should define the 'date' variable before calling this function
+# For example, you can get the date as you did in the previous code
+date = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y')
+populate_attendance_treeview(date)
+
+def update_treeview():
+    # Call the populate_attendance_treeview function with the appropriate date
+    # You should define the 'date' variable before calling this function
+    date = datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y')
+    populate_attendance_treeview(date)
+    # Schedule the function to run again after 5 seconds
+    window.after(5000, update_treeview)
+
+# Initial call to populate the Treeview
+update_treeview()
+
+
+
 
 ###################### SCROLLBAR ################################
 
@@ -468,6 +545,7 @@ quitWindow.place(x=30, y=450)
 ##################### END ######################################
 
 window.configure(menu=menubar)
+window.protocol("WM_DELETE_WINDOW", window.destroy)  # Close the window using the window's close button
 window.mainloop()
 
 ####################################################################################################
