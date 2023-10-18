@@ -363,7 +363,7 @@ window = tk.Tk()
 window.geometry("1280x720")
 window.resizable(True,False)
 window.title("No Contact Attendance Monitoring System with Machine Learning Technology")
-window.configure(background='#2d420a')
+window.configure(background='#000000')
 
 frame1 = tk.Frame(window, bg="#c79cff")
 frame1.place(relx=0.11, rely=0.17, relwidth=0.39, relheight=0.80)
@@ -371,7 +371,7 @@ frame1.place(relx=0.11, rely=0.17, relwidth=0.39, relheight=0.80)
 frame2 = tk.Frame(window, bg="#c79cff")
 frame2.place(relx=0.51, rely=0.17, relwidth=0.38, relheight=0.80)
 
-message3 = tk.Label(window, text="N C A M S" ,fg="white",bg="#2d420a" ,width=55 ,height=1,font=('comic', 29, ' bold '))
+message3 = tk.Label(window, text="N C A M S" ,fg="white",bg="#000000" ,width=55 ,height=1,font=('comic', 29, ' bold '))
 message3.place(x=10, y=10)
 
 # Load the logo image using PIL
