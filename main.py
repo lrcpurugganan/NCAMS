@@ -282,11 +282,16 @@ def TrackImages():
     
     # Create a dictionary to store the last recorded time for each student
     last_recorded_time = {}
-    
+
     while True:
         ret, im = cam.read()
         gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         faces = faceCascade.detectMultiScale(gray, 1.2, 5)
+        
+        # Get the current date for each iteration
+        ts = time.time()
+        date = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y')
+
         for (x, y, w, h) in faces:
             cv2.rectangle(im, (x, y), (x + w, y + h), (225, 0, 0), 2)
             serial, conf = recognizer.predict(gray[y:y + h, x:x + w])
@@ -300,7 +305,7 @@ def TrackImages():
                 ID = ID[1:-1]
                 bb = str(aa)
                 bb = bb[2:-2]
-                
+
                 # Check if the student's ID is in the last_recorded_time dictionary
                 if ID in last_recorded_time:
                     last_time = last_recorded_time[ID]
@@ -309,28 +314,32 @@ def TrackImages():
                         # Display the name based on the recent detection
                         cv2.putText(im, str(bb), (x, y + h), font, 1, (255, 255, 255), 2)
                         continue
-                
+
                 attendance = [str(ID), '', bb, '', str(date), '', str(timeStamp)]
                 with open("Attendance\Attendance_" + date + ".csv", 'a+') as csvFile1:
                     writer = csv.writer(csvFile1)
                     writer.writerow(attendance)
                 csvFile1.close()
-                
+
                 # Update the last recorded time for the student
                 last_recorded_time[ID] = ts
                 cv2.putText(im, str(bb), (x, y + h), font, 1, (255, 255, 255), 2)
-                
+
             else:
                 Id = 'Unknown'
                 bb = str(Id)
             cv2.putText(im, str(bb), (x, y + h), font, 1, (255, 255, 255), 2)
+
+            # Update the Treeview widget with the latest attendance records for the current date
+            update_treeview(date)
+
         cv2.imshow('Taking Attendance', im)
-        
+
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         if cv2.getWindowProperty('Taking Attendance', cv2.WND_PROP_VISIBLE) < 1:
             break
-    
+
     cam.release()
     cv2.destroyAllWindows()
 
@@ -363,7 +372,7 @@ window = tk.Tk()
 window.geometry("1280x720")
 window.resizable(True,False)
 window.title("No Contact Attendance Monitoring System with Machine Learning Technology")
-window.configure(background='#000000')
+window.configure(background='#2d420a')
 
 frame1 = tk.Frame(window, bg="#c79cff")
 frame1.place(relx=0.11, rely=0.17, relwidth=0.39, relheight=0.80)
@@ -371,7 +380,7 @@ frame1.place(relx=0.11, rely=0.17, relwidth=0.39, relheight=0.80)
 frame2 = tk.Frame(window, bg="#c79cff")
 frame2.place(relx=0.51, rely=0.17, relwidth=0.38, relheight=0.80)
 
-message3 = tk.Label(window, text="N C A M S" ,fg="white",bg="#000000" ,width=55 ,height=1,font=('comic', 29, ' bold '))
+message3 = tk.Label(window, text="N C A M S" ,fg="white",bg="#2d420a" ,width=55 ,height=1,font=('comic', 29, ' bold '))
 message3.place(x=10, y=10)
 
 # Load the logo image using PIL
@@ -403,7 +412,7 @@ frame3.place(relx=0.52, rely=0.09, relwidth=0.09, relheight=0.07)
 frame4 = tk.Frame(window, bg="#c4c6ce")
 frame4.place(relx=0.36, rely=0.09, relwidth=0.16, relheight=0.07)
 
-datef = tk.Label(frame4, text = day+"-"+mont[month]+"-"+year+"  |  ", fg="#ff61e5",bg="#2d420a" ,width=55 ,height=1,font=('comic', 22, ' bold '))
+datef = tk.Label(frame4, text = day+"-"+mont[month]+"-"+year+"  | ", fg="#ff61e5",bg="#2d420a" ,width=55 ,height=1,font=('comic', 12, ' bold '))
 datef.pack(fill='both',expand=1)
 
 clock = tk.Label(frame3,fg="#ff61e5",bg="#2d420a" ,width=55 ,height=1,font=('comic', 22, ' bold '))
@@ -507,16 +516,35 @@ tv.heading('time', text='TIME')
 date = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y')
 populate_attendance_treeview(date)
 
-def update_treeview():
-    # Call the populate_attendance_treeview function with the appropriate date
-    # You should define the 'date' variable before calling this function
-    date = datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y')
-    populate_attendance_treeview(date)
-    # Schedule the function to run again after 5 seconds
-    window.after(5000, update_treeview)
+def update_treeview(date):
+    # Clear existing data in the Treeview
+    for row in tv.get_children():
+        tv.delete(row)
 
-# Initial call to populate the Treeview
-update_treeview()
+    # Read attendance data from CSV file or your data source
+    try:
+        with open("Attendance\Attendance_" + date + ".csv", 'r') as csvFile:
+            reader = csv.reader(csvFile)
+            for row in reader:
+                try:
+                    # Modify the index to match your Excel columns
+                    id = row[0]  # Assuming ID is in the first column (Column A)
+                    name = row[2]  # Assuming names are in the third column (Column C)
+                    date = row[4]  # Assuming dates are in the fifth column (Column E)
+                    time = row[6]  # Assuming times are in the seventh column (Column G)
+
+                    # Insert the values into the Treeview
+                    tv.insert('', 'end', values=(id, name, date, time))
+                except IndexError:
+                    # Handle the case where there are not enough columns in the row
+                    pass
+    except FileNotFoundError:
+        # Handle the case where the attendance file doesn't exist
+        message.configure(text="No attendance data available for this date.")
+    
+    # Update the Treeview widget
+    tv.update_idletasks()
+
 
 
 
