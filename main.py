@@ -372,15 +372,15 @@ window = tk.Tk()
 window.geometry("1280x720")
 window.resizable(True,False)
 window.title("No Contact Attendance Monitoring System with Machine Learning Technology")
-window.configure(background='#2d420a')
+window.configure(background='#FFE5B2')
 
-frame1 = tk.Frame(window, bg="#c79cff")
+frame1 = tk.Frame(window, bg="#4869E1")
 frame1.place(relx=0.11, rely=0.17, relwidth=0.39, relheight=0.80)
 
-frame2 = tk.Frame(window, bg="#c79cff")
+frame2 = tk.Frame(window, bg="#4869E1")
 frame2.place(relx=0.51, rely=0.17, relwidth=0.38, relheight=0.80)
 
-message3 = tk.Label(window, text="N C A M S" ,fg="white",bg="#2d420a" ,width=55 ,height=1,font=('comic', 29, ' bold '))
+message3 = tk.Label(window, text="N C A M S" ,fg="black",bg="#FFE5B2" ,width=55 ,height=1,font=('comic', 29, ' bold '))
 message3.place(x=10, y=10)
 
 # Load the logo image using PIL
@@ -400,9 +400,9 @@ logo_img = ImageTk.PhotoImage(logo_img)
 logo_img_copy = ImageTk.PhotoImage(logo_img_copy)
 
 # Create a label to display the resized logo image
-logo_label = tk.Label(window, image=logo_img, bg="#2d420a")
+logo_label = tk.Label(window, image=logo_img, bg="#FFE5B2")
 logo_label.place(x=300, y=10)  # Adjust the coordinates as needed
-logo_label_copy = tk.Label(window, image=logo_img_copy, bg="#2d420a")
+logo_label_copy = tk.Label(window, image=logo_img_copy, bg="#FFE5B2")
 logo_label_copy.place(x=800 + logo_width, y=10)  # Adjust the coordinates as needed
 
 
@@ -412,38 +412,38 @@ frame3.place(relx=0.52, rely=0.09, relwidth=0.09, relheight=0.07)
 frame4 = tk.Frame(window, bg="#c4c6ce")
 frame4.place(relx=0.36, rely=0.09, relwidth=0.16, relheight=0.07)
 
-datef = tk.Label(frame4, text = day+"-"+mont[month]+"-"+year+"  | ", fg="#ff61e5",bg="#2d420a" ,width=55 ,height=1,font=('comic', 12, ' bold '))
+datef = tk.Label(frame4, text = day+"-"+mont[month]+"-"+year+"  | ", fg="red",bg="#FFE5B2" ,width=55 ,height=1,font=('comic', 12, ' bold '))
 datef.pack(fill='both',expand=1)
 
-clock = tk.Label(frame3,fg="#ff61e5",bg="#2d420a" ,width=55 ,height=1,font=('comic', 22, ' bold '))
+clock = tk.Label(frame3,fg="red",bg="#FFE5B2" ,width=55 ,height=1,font=('comic', 22, ' bold '))
 clock.pack(fill='both',expand=1)
 tick()
 
-head2 = tk.Label(frame2, text="                       For New Registrations                       ", fg="black",bg="#00fcca" ,font=('comic', 17, ' bold ') )
+head2 = tk.Label(frame2, text="                       For New Registrations                       ", fg="black",bg="#BCD7E3" ,font=('comic', 17, ' bold ') )
 head2.grid(row=0,column=0)
 
-head1 = tk.Label(frame1, text="                       For Already Registered                       ", fg="black",bg="#00fcca" ,font=('comic', 17, ' bold ') )
+head1 = tk.Label(frame1, text="                       For Already Registered                       ", fg="black",bg="#BCD7E3" ,font=('comic', 17, ' bold ') )
 head1.place(x=0,y=0)
 
-lbl = tk.Label(frame2, text="Enter ID",width=20  ,height=1  ,fg="black"  ,bg="#c79cff" ,font=('comic', 17, ' bold ') )
+lbl = tk.Label(frame2, text="Enter ID",width=20  ,height=1  ,fg="black"  ,bg="#BCD7E3" ,font=('comic', 17, ' bold ') )
 lbl.place(x=80, y=55)
 
 txt = tk.Entry(frame2,width=32 ,fg="black",font=('comic', 15, ' bold '))
 txt.place(x=30, y=88)
 
-lbl2 = tk.Label(frame2, text="Enter Name",width=20  ,fg="black"  ,bg="#c79cff" ,font=('comic', 17, ' bold '))
+lbl2 = tk.Label(frame2, text="Enter Name",width=20  ,fg="black"  ,bg="#BCD7E3" ,font=('comic', 17, ' bold '))
 lbl2.place(x=80, y=140)
 
 txt2 = tk.Entry(frame2,width=32 ,fg="black",font=('comic', 15, ' bold ')  )
 txt2.place(x=30, y=173)
 
-message1 = tk.Label(frame2, text="Enter ID and Name Before Creating A Profile" ,bg="#c79cff" ,fg="black"  ,width=39 ,height=1, activebackground = "#3ffc00" ,font=('comic', 15, ' bold '))
+message1 = tk.Label(frame2, text="Enter ID and Name Before Creating A Profile" ,bg="#4869E1" ,fg="white"  ,width=39 ,height=1, activebackground = "#3ffc00" ,font=('comic', 15, ' bold '))
 message1.place(x=7, y=230)
 
-message = tk.Label(frame2, text="" ,bg="#c79cff" ,fg="black"  ,width=39,height=1, activebackground = "#3ffc00" ,font=('comic', 16, ' bold '))
+message = tk.Label(frame2, text="" ,bg="#4869E1" ,fg="white"  ,width=39,height=1, activebackground = "#3ffc00" ,font=('comic', 16, ' bold '))
 message.place(x=7, y=450)
 
-lbl3 = tk.Label(frame1, text="Attendance",width=20  ,fg="black"  ,bg="#c79cff"  ,height=1 ,font=('comic', 17, ' bold '))
+lbl3 = tk.Label(frame1, text="Attendance",width=20  ,fg="black"  ,bg="#BCD7E3"  ,height=1 ,font=('comic', 17, ' bold '))
 lbl3.place(x=100, y=115)
 
 res=0
@@ -557,17 +557,17 @@ tv.configure(yscrollcommand=scroll.set)
 
 ###################### BUTTONS ##################################
 
-clearButton = tk.Button(frame2, text="Clear", command=clear  ,fg="black"  ,bg="#ff7221"  ,width=11 ,activebackground = "white" ,font=('comic', 11, ' bold '))
+clearButton = tk.Button(frame2, text="Clear", command=clear  ,fg="black"  ,bg="#FFC0A1"  ,width=11 ,activebackground = "white" ,font=('comic', 11, ' bold '))
 clearButton.place(x=335, y=86)
-clearButton2 = tk.Button(frame2, text="Clear", command=clear2  ,fg="black"  ,bg="#ff7221"  ,width=11 , activebackground = "white" ,font=('comic', 11, ' bold '))
+clearButton2 = tk.Button(frame2, text="Clear", command=clear2  ,fg="black"  ,bg="#FFC0A1"  ,width=11 , activebackground = "white" ,font=('comic', 11, ' bold '))
 clearButton2.place(x=335, y=172)    
-takeImg = tk.Button(frame2, text="Take Images", command=TakeImages  ,fg="white"  ,bg="#6d00fc"  ,width=34  ,height=1, activebackground = "white" ,font=('comic', 15, ' bold '))
+takeImg = tk.Button(frame2, text="Take Images", command=TakeImages  ,fg="black"  ,bg="#FFC0A1"  ,width=34  ,height=1, activebackground = "white" ,font=('comic', 15, ' bold '))
 takeImg.place(x=30, y=300)
-trainImg = tk.Button(frame2, text="Save Profile", command=psw ,fg="white"  ,bg="#6d00fc"  ,width=34  ,height=1, activebackground = "white" ,font=('comic', 15, ' bold '))
+trainImg = tk.Button(frame2, text="Save Profile", command=psw ,fg="black"  ,bg="#FFC0A1"  ,width=34  ,height=1, activebackground = "white" ,font=('comic', 15, ' bold '))
 trainImg.place(x=30, y=380)
-trackImg = tk.Button(frame1, text="Take Attendance", command=TrackImages  ,fg="black"  ,bg="#3ffc00"  ,width=35  ,height=1, activebackground = "white" ,font=('comic', 15, ' bold '))
+trackImg = tk.Button(frame1, text="Take Attendance", command=TrackImages  ,fg="black"  ,bg="#FFC0A1"  ,width=35  ,height=1, activebackground = "white" ,font=('comic', 15, ' bold '))
 trackImg.place(x=30,y=50)
-quitWindow = tk.Button(frame1, text="Quit", command=window.destroy  ,fg="black"  ,bg="#eb4600"  ,width=35 ,height=1, activebackground = "white" ,font=('comic', 15, ' bold '))
+quitWindow = tk.Button(frame1, text="Quit", command=window.destroy  ,fg="black"  ,bg="#FFC0A1"  ,width=35 ,height=1, activebackground = "white" ,font=('comic', 15, ' bold '))
 quitWindow.place(x=30, y=450)
 
 ##################### END ######################################
